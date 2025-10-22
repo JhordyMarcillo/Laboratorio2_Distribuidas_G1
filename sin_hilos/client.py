@@ -18,7 +18,7 @@ def mostrar_menu():
 
 def enviar_comando(comando):
 	client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	client_socket.connect(('localhost', 12345))
+	client_socket.connect(('localhost', 12346))
 	# usar sendall y terminar con salto de linea para delimitar mensajes si el servidor lo espera
 	client_socket.sendall(comando.encode('utf-8'))
 	respuesta = client_socket.recv(4096).decode('utf-8')

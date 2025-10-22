@@ -104,9 +104,9 @@ def procesar_comando(comando):
     
 inicializar_csv() # Inicializa CSV si no existe
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('localhost', 12345))
+server_socket.bind(('localhost', 12346))
 server_socket.listen(1)
-print("Servidor secuencial escuchando en puerto 12345...")
+print("Servidor secuencial escuchando en puerto 12346...")
 try:
     while True:
         client_socket, addr = server_socket.accept()
