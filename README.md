@@ -2,7 +2,11 @@
 ## Universidad de las Fuerzas Armadas ESPE
 ### Grupo 1 - Sistemas Distribuidos
 
----
+#### Integrantes:
+- *Pamela Chipe*  
+- *Jhordy Marcillo*
+- *Camilo Orrico*  
+- *Kleber Chávez*
 
 ## Introducción
 
