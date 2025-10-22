@@ -10,6 +10,52 @@ ARCHIVO_CSV = '../calificaciones.csv'
 # -------------------------------------------------------------
 # Funciones auxiliares para manejo del CSV de calificaciones
 # -------------------------------------------------------------
+def leer_calificaciones():
+    """Lee el CSV de calificaciones y devuelve una lista de dicts.
+    Acepta archivos con encabezado o sin encabezado.
+    Estructura: {ID_Estudiante, Nombre, Materia, Calificacion}
+    """
+    filas = []
+    if not os.path.exists(ARCHIVO_CSV):
+        return filas
+    try:
+        with open(ARCHIVO_CSV, 'r', newline='') as f:
+            primera = f.readline()
+            if not primera:
+                return filas
+            f.seek(0)
+            # Detectar si tiene encabezado
+            if 'ID_Estudiante' in primera and 'Calificacion' in primera:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    filas.append({
+                        'ID_Estudiante': row.get('ID_Estudiante', '').strip(),
+                        'Nombre': row.get('Nombre', '').strip(),
+                        'Materia': row.get('Materia', '').strip(),
+                        'Calificacion': row.get('Calificacion', '').strip(),
+                    })
+            else:
+                reader = csv.reader(f)
+                for cols in reader:
+                    if not cols or len(cols) < 4:
+                        continue
+                    filas.append({
+                        'ID_Estudiante': str(cols[0]).strip(),
+                        'Nombre': str(cols[1]).strip(),
+                        'Materia': str(cols[2]).strip(),
+                        'Calificacion': str(cols[3]).strip(),
+                    })
+    except Exception:
+        # En caso de error de lectura, devolvemos lo que haya (posiblemente vacío)
+        return filas
+    return filas
+
+def escribir_calificaciones(filas):
+    """Escribe la lista de dicts en el CSV, normalizando con encabezado."""
+    with open(ARCHIVO_CSV, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['ID_Estudiante', 'Nombre', 'Materia', 'Calificacion'])
+        writer.writeheader()
+        writer.writerows(filas)
 def inicializar_csv():
     """Crea el archivo CSV de calificaciones si no existe."""
     if not os.path.exists(ARCHIVO_CSV):
@@ -52,11 +98,10 @@ def agregar_calificacion(id_est, nombre, materia, calif):
 def buscar_por_id(id_est):
     """Busca una calificación por ID."""
     try:
-        with open(ARCHIVO_CSV, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row['ID_Estudiante'] == id_est:
-                    return {"status": "ok", "data": row}
+        filas = leer_calificaciones()
+        for row in filas:
+            if row.get('ID_Estudiante') == id_est:
+                return {"status": "ok", "data": row}
         return {"status": "not_found", "mensaje": "ID no encontrado"}
     except Exception as e:
         return {"status": "error", "mensaje": str(e)}
@@ -64,24 +109,18 @@ def buscar_por_id(id_est):
 def actualizar_calificacion(id_est, nueva_calif):
     """Actualiza la calificación de un estudiante existente."""
     try:
-        filas = []
+        filas = leer_calificaciones()
         actualizado = False
-        with open(ARCHIVO_CSV, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row['ID_Estudiante'] == id_est:
-                    row['Calificacion'] = nueva_calif
-                    actualizado = True
-                filas.append(row)
+        for row in filas:
+            if row.get('ID_Estudiante') == id_est:
+                row['Calificacion'] = str(nueva_calif)
+                actualizado = True
+                break
 
         if not actualizado:
             return {"status": "not_found", "mensaje": "ID no encontrado"}
 
-        with open(ARCHIVO_CSV, 'w', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=['ID_Estudiante', 'Nombre', 'Materia', 'Calificacion'])
-            writer.writeheader()
-            writer.writerows(filas)
-
+        escribir_calificaciones(filas)
         return {"status": "ok", "mensaje": "Calificación actualizada correctamente"}
     except Exception as e:
         return {"status": "error", "mensaje": str(e)}
@@ -89,9 +128,7 @@ def actualizar_calificacion(id_est, nueva_calif):
 def listar_todas():
     """Lista todas las calificaciones registradas."""
     try:
-        with open(ARCHIVO_CSV, 'r') as f:
-            reader = csv.DictReader(f)
-            data = list(reader)
+        data = leer_calificaciones()
         return {"status": "ok", "data": data}
     except Exception as e:
         return {"status": "error", "mensaje": str(e)}
@@ -99,24 +136,11 @@ def listar_todas():
 def eliminar_por_id(id_est):
     """Elimina una calificación por ID."""
     try:
-        filas = []
-        eliminado = False
-        with open(ARCHIVO_CSV, 'r') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                if row['ID_Estudiante'] != id_est:
-                    filas.append(row)
-                else:
-                    eliminado = True
-
-        if not eliminado:
+        filas = leer_calificaciones()
+        nueva_lista = [row for row in filas if row.get('ID_Estudiante') != id_est]
+        if len(nueva_lista) == len(filas):
             return {"status": "not_found", "mensaje": "ID no encontrado"}
-
-        with open(ARCHIVO_CSV, 'w', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=['ID_Estudiante', 'Nombre', 'Materia', 'Calificacion'])
-            writer.writeheader()
-            writer.writerows(filas)
-
+        escribir_calificaciones(nueva_lista)
         return {"status": "ok", "mensaje": "Registro eliminado correctamente"}
     except Exception as e:
         return {"status": "error", "mensaje": str(e)}
