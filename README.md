@@ -70,7 +70,6 @@ El sistema está compuesto por:
 4. **Almacenamiento persistente** (Archivos CSV)
 
 ### Diagrama de Arquitectura
-```<img width="2190" height="1560" alt="Diagrama de secuencia - Copia de Página 1 (1)" src="https://github.com/user-attachments/assets/3364856a-887d-4e40-962b-c418e42273f4" />
 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Cliente 1     │    │   Cliente 2     │    │   Cliente N     │
@@ -93,6 +92,37 @@ El sistema está compuesto por:
                      │   - Consulta materias   │
                      └─────────────────────────┘
 ```
+graph TD
+    subgraph Cliente (Navegador Web)
+        A[Frontend Web (React/JS)]
+    end
+
+    subgraph Servidor (Backend - server.py)
+        B[API REST (Flask)]
+        C[Gestor WebSocket (Socket.IO)]
+    end
+
+    subgraph Almacenamiento
+        D[Base de Datos (MongoDB)]
+        E[Almacenamiento de Archivos (Cloudinary)]
+    end
+
+    %% --- Flujos de Comunicacion ---
+    
+    %% Flujo 1: API (ej. crear sala, ver salas)
+    A -- Peticiones HTTP (ej. /rooms) --> B
+    B -- Escribe/Lee --> D[users, rooms]
+    B -- Respuestas JSON --> A
+
+    %% Flujo 2: Tiempo Real (ej. enviar mensaje)
+    A -- Conexión WS (ej. @socketio.on('send_message')) --> C
+    C -- Escribe Mensaje --> D[messages]
+    C -- Emite Evento ('message') --> A
+
+    %% Flujo 3: Subida de Archivos
+    A -- Sube archivo (POST /upload) --> E
+    E -- Retorna URL --> A
+    A -- Envía URL por WS (ej. 'send_message') --> C
 
 ## Estructura del Proyecto
 
