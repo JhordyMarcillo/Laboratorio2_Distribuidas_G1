@@ -338,15 +338,6 @@ ID_Estudiante,Nombre,Materia,Calificacion
 - Sanitización de datos de entrada
 - Manejo seguro de archivos
 
-## Integrantes del Equipo
-
-**Universidad de las Fuerzas Armadas ESPE**  
-**Sistemas Distribuidos - Grupo 1**
-
-*[Aquí puedes agregar los nombres de los integrantes del equipo]*
-
----
-
 ## Conclusiones
 
 ### Desafíos Enfrentados
