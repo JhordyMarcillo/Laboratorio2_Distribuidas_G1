@@ -70,7 +70,8 @@ El sistema está compuesto por:
 4. **Almacenamiento persistente** (Archivos CSV)
 
 ### Diagrama de Arquitectura
-```
+```<img width="2190" height="1560" alt="Diagrama de secuencia - Copia de Página 1 (1)" src="https://github.com/user-attachments/assets/3364856a-887d-4e40-962b-c418e42273f4" />
+
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Cliente 1     │    │   Cliente 2     │    │   Cliente N     │
 │   (Puerto 12345)│    │   (Puerto 12345)│    │   (Puerto 12345)│
